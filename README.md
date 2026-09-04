@@ -1,36 +1,28 @@
-## Activity 1: Explore PQC Algorithms [Theory Task]
+# Falcon Accounts (Substrate Experimental Integration)
+This project explores integrating Falcon post-quantum keypairs into a Substrate-compatible account system. It provides deterministic account generation from a fixed seed and maps Falcon public keys into standard Substrate AccountId32 identifiers using Blake2 hashing and SS58 encoding.
 
-1. Investigate three NIST digital‑signature algorithms: ML‑DSA, SLH‑DSA and FN‑DSA. List all algorithm variants together with private‑key size, public‑key size and signature size.
-2. Study ML‑KEM (Key Encapsulation Mechanism) and compare it against RSA. RSA is vulnerable to Shor’s quantum algorithm; ML‑KEM is lattice‑based and quantum‑resilient, designed for secure key exchange.
+The goal is to experiment with how post-quantum cryptography can coexist with existing Substrate account infrastructure.
 
-## Activity 2: Implement ML‑KEM [Coding Practical]
+# Overview
+Each Falcon account is derived through the following pipeline:
 
-1. Create the `mlkem` project folder on an Ubuntu VM desktop. Set up a Python virtual environment and install `kyber‑py` and `dilithium‑py` packages.
-2. Write `mlkem_demo.py` to run ML‑KEM‑768: Alice generates a key pair. Bob uses Alice’s public key to encapsulate and obtain a shared secret. Alice decapsulates the ciphertext. Both parties derive an identical shared secret.
-3. Create a GitHub repository named `post‑quantum‑algorithms` and upload the project code.
+- A 32-byte deterministic seed is used as input, for experimentation determinism is helpful
+- A Falcon keypair is generated using falcon-rs
+- The public key is extracted
+- The public key is hashed using blake2_256
+- The resulting 32-byte hash is used as a AccountId32
+- The account is displayed in SS58 format for Substrate compatibility
 
-> 
-> Common pitfalls: Re‑activate the virtual environment for every new terminal session, otherwise modules cannot be found. Older Git defaults to the `master` branch; rename it to `main` before pushing to GitHub.
+# Example Output
+=== FALCON 512 ===
+AccountId32 (hex): e5d4361c0b402841991bfef371a734b4489d732e2ae9c6107b8f3df5ff0ffe46
+SS58 Address:      5HG3rzNxMmxMmomx3bNZ4hq3vA7A8DhGmE11QHnfuboGjYrY
 
-## Activity 3: Implement ML‑DSA [Coding Practical]
+=== FALCON 1024 ===
+AccountId32 (hex): c1926f85424f2df0fce97c172cfd4792af89d9e5b70326a62bc6358625766072
+SS58 Address:      5GSWbiZ64aoCB8FYsbRUgUHJwBSTXhgsezwnogeVK8VEemeA
 
-1. Within the same project, create `mldsa_demo.py`. Use ML‑DSA‑65 to generate a keypair, sign a text message and verify the signature. A `True` output indicates a valid signature.
-2. Push the new source file to the existing GitHub repository.
-3. Write a professional `README.md` explaining the project, environment setup and execution steps. Include links to PQC reference repositories.
-4. Add a `.gitignore` file to avoid uploading the local `.venv` virtual‑environment folder.
-
-## Activity 4: Resources for all PQC algorithms [Research Task]
-
-Explore four open‑source GitHub repositories for NIST PQC algorithm implementations. No full implementation code is required for this activity. Add these links to the reference section in README:
-
-- ML‑KEM, ML‑DSA, SLH‑DSA, FN‑DSA source‑code repositories.
-
-### Overall Project Objective
-
-Gain hands‑on experience with NIST‑standard lattice‑based post‑quantum cryptography. Understand cybersecurity risks introduced by quantum computers. Complete demonstration code for ML‑KEM key exchange and ML‑DSA digital signatures, together with local development, Git version control and GitHub repository workflow.
-
-### Important Notes
-
-1. On Ubuntu use `python3`. Run `source .venv/bin/activate` each time you open a new terminal to enable the virtual environment.
-2. When pushing to GitHub over HTTPS, use a Personal Access Token instead of your web‑site login password.
-3. Never commit and push the `.venv` directory to GitHub.
+# Notes
+- This project is experimental and not intended for production security systems.
+- Falcon keys are used here only for account derivation, not for transaction signing inside the runtime. The intention of this project is not provide a way to generate valid account IDs which can be used in Substrate - Blockchain for experimenting Falcon based DSA algorithm integration. 
+- SS58 encoding is used purely for compatibility with Substrate tooling.
